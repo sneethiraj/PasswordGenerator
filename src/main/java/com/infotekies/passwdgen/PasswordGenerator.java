@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class PasswordGenerator {
 	
-	public static final String CONFIG_FILENAME = "/passwordgen.properties" ;
+	public static final String CONFIG_FILENAME = "passwordgen.properties" ;
 	
 	public static final String CONFIG_PREFIX = "generate.password." ;
 	
@@ -55,22 +55,30 @@ public class PasswordGenerator {
 	}
 	
 	public void init() {
-		InputStream in = getClass().getResourceAsStream(CONFIG_FILENAME) ;
+		String fn = CONFIG_FILENAME ;
+		InputStream in = getClass().getResourceAsStream(fn) ;
+		if (in == null) {
+			fn = "/" + CONFIG_FILENAME ;
+			in = getClass().getResourceAsStream(fn) ;
+		}
 		if (in != null) {
+			// System.out.println("FILENAME: [" + fn + "]") ;
 			try {
 				prop.load(in);
-				
-				noOfPasswordToGenerate = getIntConfigValue(GEN_PASSWORD_COUNT_CONFIG_NAME, DEFAULT_GEN_PASSWORD_COUNT) ;
-				minimumPasswordLength = getIntConfigValue(MIN_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MIN_LEN) ;
-				maximumPasswordLength = getIntConfigValue(MAX_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MAX_LEN) ;
-				isExpectedNumberic =  "TRUE".equalsIgnoreCase(getConfigValue(NUMERIC_NEEDED_CONFIG_NAME,  Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_NUMERIC))) ;
-				isExpectedBothCase  =  "TRUE".equalsIgnoreCase(getConfigValue(BOTH_CASE_NEEDED_CONFIG_NAME, Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_BOTH_CASE))) ;
 				
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.exit(1);
 			}
 		}
+		else {
+			// System.err.println("Using default value as file [" + CONFIG_FILENAME + "] is not found in the classpath") ;
+		}
+		noOfPasswordToGenerate = getIntConfigValue(GEN_PASSWORD_COUNT_CONFIG_NAME, DEFAULT_GEN_PASSWORD_COUNT) ;
+		minimumPasswordLength = getIntConfigValue(MIN_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MIN_LEN) ;
+		maximumPasswordLength = getIntConfigValue(MAX_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MAX_LEN) ;
+		isExpectedNumberic =  "TRUE".equalsIgnoreCase(getConfigValue(NUMERIC_NEEDED_CONFIG_NAME,  Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_NUMERIC))) ;
+		isExpectedBothCase  =  "TRUE".equalsIgnoreCase(getConfigValue(BOTH_CASE_NEEDED_CONFIG_NAME, Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_BOTH_CASE))) ;
 	}
 	
 	public PasswordGenerator() {

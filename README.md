@@ -15,4 +15,5 @@ mvn exec:java -Dexec.mainClass=com.infotekies.passwdgen.PasswordGenerator
 # Run directly using Java JRE
 #
 
-java -cp "./target/*:."  com.infotekies.passwdgen.PasswordGenerator
+mvn package
+java -cp "./src/main/resources:./target/*"  com.infotekies.passwdgen.PasswordGenerator
