@@ -6,6 +6,8 @@ package com.infotekies.passwdgen;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
@@ -21,7 +23,8 @@ public class PasswordGenerator {
 	public static final String MAX_LEN_CONFIG_NAME = "maxLen" ;
 	public static final String NUMERIC_NEEDED_CONFIG_NAME = "numericNeeded" ;
 	public static final String BOTH_CASE_NEEDED_CONFIG_NAME = "bothCaseNeeded" ;
-	
+	public static final String SPECIAL_CHAR_NEEDED_CONFIG_NAME = "includeSpecialChars" ;
+	public static final String SPECIAL_CHAR_LIST_CONFIG_NAME = "acceptedSpecialChars" ;
 	
 	public static final int DEFAULT_GEN_PASSWORD_COUNT = 10 ;
 	
@@ -29,11 +32,14 @@ public class PasswordGenerator {
 	public static final int DEFAULT_GEN_PASSWORD_MAX_LEN = 12 ;
 	public static final boolean DEFAULT_GEN_PASSWORD_NEED_NUMERIC = true ;
 	public static final boolean  DEFAULT_GEN_PASSWORD_NEED_BOTH_CASE = true ;
+	public static final boolean DEFAULT_GEN_PASSWORD_NEED_SPECIAL_CHARS = false ;
+	public static final String DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" ;
 	
 	
 	private static final ArrayList<Character> alphaLetters = new ArrayList<Character>() ;
 	private static final ArrayList<Character> alphaUpperLetters = new ArrayList<Character>() ;
 	private static final ArrayList<Character> numericLetters = new ArrayList<Character>() ;
+	private static final int MAX_NUMBER_OF_SEED_GENERATION = 20 ;
 
 	private Properties prop = new Properties() ;
 	
@@ -42,6 +48,8 @@ public class PasswordGenerator {
 	private int maximumPasswordLength = DEFAULT_GEN_PASSWORD_MAX_LEN ;
 	private boolean isExpectedNumberic = DEFAULT_GEN_PASSWORD_NEED_NUMERIC ;
 	private boolean isExpectedBothCase = DEFAULT_GEN_PASSWORD_NEED_BOTH_CASE ;
+	private boolean isSpecialCharNeeded = DEFAULT_GEN_PASSWORD_NEED_SPECIAL_CHARS ;
+	private String specialCharList = DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST ;
 
 	static {
 		for(int x = 'a' ; x <= 'z' ; x++) {
@@ -54,7 +62,11 @@ public class PasswordGenerator {
  		}
 	}
 	
-	public void init() {
+	private Random random = null ;
+	private ArrayList<Character> all =  null ; 
+	private int setSz = 0 ; 
+	
+	private void preInit() {
 		String fn = CONFIG_FILENAME ;
 		InputStream in = getClass().getResourceAsStream(fn) ;
 		if (in == null) {
@@ -79,10 +91,69 @@ public class PasswordGenerator {
 		maximumPasswordLength = getIntConfigValue(MAX_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MAX_LEN) ;
 		isExpectedNumberic =  "TRUE".equalsIgnoreCase(getConfigValue(NUMERIC_NEEDED_CONFIG_NAME,  Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_NUMERIC))) ;
 		isExpectedBothCase  =  "TRUE".equalsIgnoreCase(getConfigValue(BOTH_CASE_NEEDED_CONFIG_NAME, Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_BOTH_CASE))) ;
+		isSpecialCharNeeded = "TRUE".equalsIgnoreCase(getConfigValue(SPECIAL_CHAR_NEEDED_CONFIG_NAME, Boolean.toString(DEFAULT_GEN_PASSWORD_NEED_SPECIAL_CHARS))) ;
+		specialCharList = getConfigValue(SPECIAL_CHAR_LIST_CONFIG_NAME,DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST) ;
 	}
 	
+	
+	public void init() {
+		all = new ArrayList<Character>() ;
+		all.addAll(alphaLetters) ;
+		all.addAll(alphaUpperLetters) ;
+		all.addAll(numericLetters) ;
+		
+		if (isSpecialCharNeeded) {
+			if (specialCharList != null && specialCharList.length() > 0) {
+				for (char c : specialCharList.toCharArray()) {
+					Character ch = Character.valueOf(c) ;
+					if (!all.contains(ch)) {
+						all.add(ch) ;
+					}
+				}
+			}
+		}
+		setSz = all.size();
+		try {
+			random = SecureRandom.getInstanceStrong() ;
+		} catch (NoSuchAlgorithmException e) {
+			random = new Random() ;
+		}
+		random.setSeed(System.currentTimeMillis());
+		long nextSeed = random.nextLong() ;
+		
+		
+		int numberOfSeedCycle = random.nextInt(MAX_NUMBER_OF_SEED_GENERATION) ;
+		for(int i = 0 ; i < numberOfSeedCycle ; i++) {
+			random.setSeed(nextSeed);
+			nextSeed = random.nextLong() ;
+		}
+	}
+	
+	public boolean isSpecialCharNeeded() {
+		return isSpecialCharNeeded;
+	}
+
+	public void setSpecialCharNeeded(boolean isSpecialCharNeeded) {
+		this.isSpecialCharNeeded = isSpecialCharNeeded;
+	}
+
+	public String getSpecialCharList() {
+		return specialCharList;
+	}
+
+	public void setSpecialCharList(String specialCharList) {
+		StringBuilder sb = new StringBuilder() ;
+		for (char c : specialCharList.toCharArray()) {
+			if (! (Character.isAlphabetic(c) || Character.isDigit(c)) ) {
+				sb.append(c) ;
+			}
+		}
+		this.setSpecialCharNeeded((sb.length() > 0)) ;
+		this.specialCharList = sb.toString();
+	}
+
 	public PasswordGenerator() {
-		init() ;
+		preInit() ;
 	}
 
 	
@@ -143,21 +214,11 @@ public class PasswordGenerator {
 	}
 	
 	
+	
 	private String generatorPassword() {
 	
 		String password = null ;
-		
-		ArrayList<Character> all = new ArrayList<Character>() ;
-		
-		all.addAll(alphaLetters) ;
-		all.addAll(alphaUpperLetters) ;
-		all.addAll(numericLetters) ;
- 				
 		int len = getPasswordLength() ;
-		
-		Random random = new Random() ;
-		
-		int setSz = all.size();
 		
 		do
 		{
@@ -166,7 +227,7 @@ public class PasswordGenerator {
 			for(int i = 0 ; i < len ; i++) {
 				int index = random.nextInt(setSz) ;
 				Character c = all.get(index) ;
-				while ((i == 0) && Character.isDigit(c)) {
+				while ((i == 0) && ! Character.isAlphabetic(c)) {
 					index = random.nextInt(setSz) ;
 					c = all.get(index) ;
 				}
@@ -181,6 +242,7 @@ public class PasswordGenerator {
 	}
 	
 	public void printGeneratedPasswords() {
+		init() ;
 		for(int i = 0 ; i < noOfPasswordToGenerate; i++) {
 			System.out.println(generatorPassword()) ;
 		}
@@ -190,10 +252,12 @@ public class PasswordGenerator {
 	private boolean isValidPassword(String pass) {
 		boolean ret = true ;
 		
-		if (isExpectedNumberic || isExpectedBothCase) {
+		if (isExpectedNumberic || isExpectedBothCase || isSpecialCharNeeded) {
 			boolean lowerCaseFound = false ;
 			boolean digitFound = false ;
 			boolean upperCaseFound = false ;
+			boolean specialCharFound = false ;
+			
 			for(char c : pass.toCharArray()) {
 				if (!digitFound && Character.isDigit(c)) {
 					digitFound = true ;
@@ -204,6 +268,9 @@ public class PasswordGenerator {
 				else if (!upperCaseFound && Character.isUpperCase(c) ) {
 					upperCaseFound = true ;
 				}
+				else if (!specialCharFound && specialCharList.indexOf(c) >= 0) {
+					specialCharFound = true ;
+				}
 			}
 			
 			if (isExpectedNumberic && !digitFound) {
@@ -213,6 +280,10 @@ public class PasswordGenerator {
 			
 			if (isExpectedBothCase && (!lowerCaseFound || !upperCaseFound)) {
 				// System.err.println("Password failed to have mixed case:" + pass) ;
+				ret = false ;
+			}
+			
+			if (isSpecialCharNeeded && !specialCharFound) {
 				ret = false ;
 			}
 		}
@@ -270,13 +341,29 @@ public class PasswordGenerator {
 		PasswordGenerator pg = new PasswordGenerator() ;
 		
 		if (args.length > 0) {
-			pg.setNoOfPasswordToGenerate(Integer.parseInt(args[0]));
+			for(String arg : args) {
+				if (arg.startsWith("--")) {
+					if (arg.startsWith("--special=")){
+						pg.setSpecialCharNeeded(true) ;
+						int start = "--special=".length()  ;
+						int end = arg.length() ;
+						if (end > start) {
+							pg.setSpecialCharList(arg.substring(start, end));
+						}
+						else {
+							pg.setSpecialCharList(DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST);
+						}
+					}
+				}
+				else {
+					int noOfPasswordToGenerate = Integer.parseInt(arg);
+					pg.setNoOfPasswordToGenerate(noOfPasswordToGenerate);
+				}
+			}
 		}
-		
+		pg.init(); 
 		pg.printGeneratedPasswords() ;
 		
 	}
-	
-
 
 }
