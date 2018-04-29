@@ -1,7 +1,7 @@
 # PasswordGenerator
 #
 # Author: Selvamohan Neethiraj
-# (c) 2004-2016, InfoTekies Corporation
+# (c) 2004-2018, InfoTekies Corporation
 #
 
 This is just to generate more compilcated password for website that has more conditions (such as One Numeric, One Upercase, ....)

@@ -1,7 +1,7 @@
 package com.infotekies.passwdgen;
 
 /*
- * (c) 2011, InfoTekies Corporation
+ * (c) 2004-2018, InfoTekies Corporation
  */
 
 import java.io.IOException;
