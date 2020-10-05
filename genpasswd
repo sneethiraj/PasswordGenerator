@@ -1,5 +1,10 @@
 #!/bin/bash
-script_dir=`dirname $(readlink  $0)`
+fn=`readlink $0`
+if [ "${fn}x" = "x" ]
+then
+	fn=${0}
+fi
+script_dir=`dirname ${fn}`
 cd ${script_dir}
 count=`ls -1 ./target/PasswordGenerator-*.jar 2> /dev/null  | wc -l | tr -d ' '`
 if [ "${count}" == "0" ]
