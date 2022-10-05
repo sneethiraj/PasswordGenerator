@@ -269,8 +269,8 @@ public class PasswordGenerator {
 
 	public void printGeneratedPasswords() {
 		init();
-		for (int i = 0; i < noOfPasswordToGenerate; i++) {
-			System.out.println(generatorPassword());
+		for (int i = 1; i <= noOfPasswordToGenerate; i++) {
+			System.out.printf("[%d]: %s\n", i, generatorPassword());
 		}
 	}
 
