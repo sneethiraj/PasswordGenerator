@@ -1,0 +1,7 @@
+0=\#
+1=com.infotekies
+2=java
+3=jvaax
+4=org
+5=com
+6=

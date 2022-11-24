@@ -19,6 +19,37 @@ Author: Selvamohan Neethiraj
           <target>1.8</target>
         </configuration>
       </plugin>
+
+	  <!-- spotless plugin for code formatting -->
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.22.4</version>
+        <configuration>
+          <java>
+            <licenseHeader>
+              <file>spotless/infotekies_license_header.txt</file>
+            </licenseHeader>
+            <importOrder>
+              <file>spotless/infotekies_importorder.txt</file>
+            </importOrder>
+            <eclipse>
+              <file>spotless/infotekies_formatter.xml</file>
+            </eclipse>
+            <removeUnusedImports />
+            <trimTrailingWhitespace />
+          </java>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>compile</phase>
+          </execution>
+        </executions>
+      </plugin>
+
       
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
