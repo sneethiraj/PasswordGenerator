@@ -12,6 +12,22 @@ Author: Selvamohan Neethiraj
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.7</version>
 	</parent>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>2.7.7</version>
+				<exclusions>
+                    <exclusion>
+						<groupId>org.yaml</groupId>
+						<artifactId>snakeyaml</artifactId>
+                    </exclusion>
+                </exclusions>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	
 	<groupId>com.infotekies.security.PasswordGenerator</groupId>
 	<artifactId>PasswordGenerator</artifactId>
@@ -46,6 +62,12 @@ Author: Selvamohan Neethiraj
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.33</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 	<build>
