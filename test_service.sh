@@ -1,2 +1,7 @@
 #!/bin/bash
-curl -s "http://localhost:8080/v1/infotekies/passwords" | jq '.'
+ProfileName="infotekies"
+if [ $# -gt 0 ]
+then
+	ProfileName="${1}"
+fi
+curl -s "http://localhost:8080/v1/${ProfileName}/passwords" | jq '.'
