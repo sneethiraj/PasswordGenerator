@@ -14,5 +14,21 @@ then
 		mvn package
 	fi
 fi
-java -cp "./config:./lib/*:./src/main/resources:./target/*" \
-		-Dloader.main=com.infotekies.passwdgen.SpringBootMainApp org.springframework.boot.loader.PropertiesLauncher $*
+
+PID_FILE="${HOME}/.passwordgen.pid"
+LOG_FILE=passwdgen-nohup-out.log
+
+nohup java -cp "./config:./lib/*:./src/main/resources:./target/*" \
+		-Dloader.main=com.infotekies.passwdgen.SpringBootMainApp \
+		org.springframework.boot.loader.PropertiesLauncher $* > ${LOG_FILE} 2>&1
+
+PID=$!
+
+echo "${PID}" > ${PID_FILE}
+
+#
+# To stop the container from Exiting, do tail of /dev/null
+#
+
+tail -f /dev/null
+

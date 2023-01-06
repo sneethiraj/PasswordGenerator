@@ -16,21 +16,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SpringBootMainApp {
 
-  private final Logger LOG = LoggerFactory.getLogger(this.getClass());
-
-  // implements CommandLineRunner
-  // @Override
-  public void run(String... args) throws Exception {
-    LOG.info("run() method is being called");
-    try {
-
-    } finally {
-      LOG.info("run() method has been completed.");
-    }
-  }
+  private static final Logger LOG = LoggerFactory.getLogger(SpringBootMainApp.class);
 
   public static void main(String[] args) {
+    LOG.info("Start of SpringBoot " + SpringBootMainApp.class.getName() + " - .......");
     SpringApplication.run(SpringBootMainApp.class, args);
+    LOG.info("Kicked off SpringBoot class : " + SpringBootMainApp.class.getName() + " - DONE.");
   }
 
 }
