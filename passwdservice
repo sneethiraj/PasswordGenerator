@@ -6,10 +6,13 @@ then
 fi
 script_dir=`dirname ${fn}`
 cd ${script_dir}
-count=`ls -1 ./target/PasswordGenerator-*.jar 2> /dev/null  | wc -l | tr -d ' '`
-if [ "${count}" == "0" ]
+if [ -d ./target ]
 then
-	mvn package
+	count=`ls -1 ./target/PasswordGenerator-*.jar 2> /dev/null  | wc -l | tr -d ' '`
+	if [ "${count}" == "0" ]
+	then
+		mvn package
+	fi
 fi
-java -cp "./src/main/resources:./target/*" \
+java -cp "./config:./lib/*:./src/main/resources:./target/*" \
 		-Dloader.main=com.infotekies.passwdgen.SpringBootMainApp org.springframework.boot.loader.PropertiesLauncher $*
