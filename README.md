@@ -17,3 +17,17 @@ mvn exec:java -Dexec.mainClass=com.infotekies.passwdgen.PasswordGenerator
 
 mvn package
 java -cp "./src/main/resources:./target/*"  com.infotekies.passwdgen.PasswordGenerator
+
+#
+# Services Exposed
+#
+List Profiles:		/profiles/list			  - GET
+Get Profile:			/profiles/${profileName}	  - GET
+Set Profile:			/profiles/${profileName}	  - POST
+Delete Profile:		/profiles/${profileName}	  - DELETE
+
+Generate Password:	/passwords/list?count=${count}&profile=${profileName}
+
+
+
+

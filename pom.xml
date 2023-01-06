@@ -2,83 +2,119 @@
 Author: Selvamohan Neethiraj
 (c) 2004-2018, InfoTekies Corporation
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.infotekies.security.PasswordGenerator</groupId>
-  <artifactId>PasswordGenerator</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>PasswordGenerator</name>
-  <description>Helps to generate random password</description>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-	  <!-- spotless plugin for code formatting -->
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.22.4</version>
-        <configuration>
-          <java>
-            <licenseHeader>
-              <file>spotless/infotekies_license_header.txt</file>
-            </licenseHeader>
-            <importOrder>
-              <file>spotless/infotekies_importorder.txt</file>
-            </importOrder>
-            <eclipse>
-              <file>spotless/infotekies_formatter.xml</file>
-            </eclipse>
-            <removeUnusedImports />
-            <trimTrailingWhitespace />
-          </java>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <phase>compile</phase>
-          </execution>
-        </executions>
-      </plugin>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.7</version>
+	</parent>
+	
+	<groupId>com.infotekies.security.PasswordGenerator</groupId>
+	<artifactId>PasswordGenerator</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-      
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <mainClass>com.infotekies.passwdgen.PasswordGenerator</mainClass>
-          <!-- 
-          <arguments>
-            <argument>argument1</argument>
-          </arguments>
-          <systemProperties>
-            <systemProperty>
-              <key>myproperty</key>
-              <value>myvalue</value>
-            </systemProperty>
-          </systemProperties>
-           -->
-        </configuration>
-      </plugin>     
-    </plugins>    
-  </build>
-  
-  
+	<name>PasswordGenerator</name>
+	<description>Helps to generate random password</description>
+	
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+  		<start-class>com.infotekies.passwdgen.SpringBootMainApp</start-class>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<!-- spotless plugin for code formatting -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.22.4</version>
+				<configuration>
+					<java>
+						<licenseHeader>
+							<file>spotless/infotekies_license_header.txt</file>
+						</licenseHeader>
+						<importOrder>
+							<file>spotless/infotekies_importorder.txt</file>
+						</importOrder>
+						<eclipse>
+							<file>spotless/infotekies_formatter.xml</file>
+						</eclipse>
+						<removeUnusedImports />
+						<trimTrailingWhitespace />
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.infotekies.passwdgen.PasswordGenerator</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

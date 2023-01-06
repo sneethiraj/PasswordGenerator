@@ -18,7 +18,16 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class PasswordGenerator {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PasswordGenerator implements CommandLineRunner {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PasswordGenerator.class);
 
   public static final String CONFIG_FILENAME = "passwordgen.properties";
 
@@ -60,6 +69,7 @@ public class PasswordGenerator {
     }
   }
 
+  private String profileName = null;
   private final Properties prop = new Properties();
   private int noOfPasswordToGenerate = DEFAULT_GEN_PASSWORD_COUNT;
   private int minimumPasswordLength = DEFAULT_GEN_PASSWORD_MIN_LEN;
@@ -73,9 +83,16 @@ public class PasswordGenerator {
   private ArrayList<Character> all = null;
   private int setSz = 0;
 
-  public static void main(String[] args) {
+  @Override
+  public void run(String... args) throws Exception {
 
-    PasswordGenerator pg = new PasswordGenerator();
+    PasswordGenerator pg = null;
+
+    if (args.length == 0) {
+      pg = new PasswordGenerator();
+    } else {
+      pg = new PasswordGenerator(args[0]);
+    }
 
     if (args.length > 0) {
       for (String arg : args) {
@@ -90,15 +107,11 @@ public class PasswordGenerator {
               pg.setSpecialCharList(DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST);
             }
           }
-        } else {
-          int noOfPasswordToGenerate = Integer.parseInt(arg);
-          pg.setNoOfPasswordToGenerate(noOfPasswordToGenerate);
         }
       }
     }
     pg.init();
     pg.printGeneratedPasswords();
-
   }
 
   private void preInit() {
@@ -120,6 +133,7 @@ public class PasswordGenerator {
     } else {
       // System.err.println("Using default value as file [" + CONFIG_FILENAME + "] is not found in the classpath") ;
     }
+
     noOfPasswordToGenerate = getIntConfigValue(GEN_PASSWORD_COUNT_CONFIG_NAME, DEFAULT_GEN_PASSWORD_COUNT);
     minimumPasswordLength = getIntConfigValue(MIN_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MIN_LEN);
     maximumPasswordLength = getIntConfigValue(MAX_LEN_CONFIG_NAME, DEFAULT_GEN_PASSWORD_MAX_LEN);
@@ -160,6 +174,11 @@ public class PasswordGenerator {
   }
 
   public PasswordGenerator() {
+    preInit();
+  }
+
+  public PasswordGenerator(String profileName) {
+    this.profileName = profileName;
     preInit();
   }
 
@@ -335,6 +354,14 @@ public class PasswordGenerator {
     return ret;
   }
 
+  public String getProfileName() {
+    return profileName;
+  }
+
+  public void setProfileName(String profileName) {
+    this.profileName = profileName;
+  }
+
   public String getConfigValue(String key) {
     return getConfigValue(key, null);
   }
@@ -355,28 +382,59 @@ public class PasswordGenerator {
   public String getConfigValue(String key, String defaultValue) {
     String ret = null;
 
-    ret = System.getProperty(key);
-
-    if (ret == null) {
-      ret = prop.getProperty(key);
-    }
+    String kn = key;
 
     if (!key.startsWith(CONFIG_PREFIX)) {
-
-      String kn = CONFIG_PREFIX + key;
-
-      ret = System.getProperty(kn);
-
-      if (ret == null) {
-        ret = prop.getProperty(kn);
-      }
+      kn = CONFIG_PREFIX + key;
     }
+
+    ret = getProfileBasedConfig(kn);
 
     if (ret == null) {
       ret = defaultValue;
     }
 
     return ret;
+  }
+
+  private String getProfileBasedConfig(String key) {
+
+    String kn = key;
+    String ret = null;
+
+    if (profileName != null) {
+      kn = profileName + "." + key;
+    }
+
+    while (kn != null && ret == null) {
+
+      ret = getConfigLookup(kn);
+
+      if (ret == null) {
+        int foundAt = kn.indexOf(".");
+        if (foundAt == -1) {
+          break;
+        }
+        kn = kn.substring(foundAt + 1);
+      }
+
+    }
+
+    return ret;
+
+  }
+
+  private String getConfigLookup(String key) {
+    String ret = System.getProperty(key);
+    if (ret == null) {
+      ret = prop.getProperty(key);
+    }
+    LOG.info("getConfig [" + key + "] => [" + ret + "]");
+    return ret;
+  }
+
+  public static void main(String[] args) {
+    SpringApplication.run(PasswordGenerator.class, args);
   }
 
 }
