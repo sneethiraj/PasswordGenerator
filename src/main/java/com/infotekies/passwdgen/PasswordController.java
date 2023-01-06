@@ -9,6 +9,8 @@
 package com.infotekies.passwdgen;
 
 import java.util.Set;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,12 @@ public class PasswordController {
     PasswordGenerator pg = new PasswordGenerator(profileName);
     pg.init();
     return pg.generatePassword();
+  }
+
+  @GetMapping("/error")
+  public String handleError(HttpServletRequest request) {
+    Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+    return (status != null ? ("error-" + status) : "error-unknown-status");
   }
 
 }
