@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="daily_rolling"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>passwordgenerator.log</file>
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger:%line - %msg%n
+			</pattern>
+		</encoder>
+	</appender>	
+	<root level="INFO" >
+		<appender-ref ref="daily_rolling" />
+	</root>
+</configuration>
