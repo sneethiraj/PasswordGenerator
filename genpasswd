@@ -12,5 +12,7 @@ then
 	mvn package
 fi
 java -cp "./src/main/resources:./target/*"  \
+		-Dspring.main.banner-mode=off   \
+		-Dlogging.level.root=error    \
 		-Dspring.main.web-application-type=none \
 		-Dloader.main=com.infotekies.passwdgen.PasswordGenerator org.springframework.boot.loader.PropertiesLauncher $*

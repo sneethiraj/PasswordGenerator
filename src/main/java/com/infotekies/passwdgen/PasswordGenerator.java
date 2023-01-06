@@ -86,32 +86,39 @@ public class PasswordGenerator implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
 
-    PasswordGenerator pg = null;
+    String loaderMain = System.getProperty("loader.main");
 
-    if (args.length == 0) {
-      pg = new PasswordGenerator();
-    } else {
-      pg = new PasswordGenerator(args[0]);
-    }
+    if (loaderMain != null && loaderMain.equals(PasswordGenerator.class.getName())) {
 
-    if (args.length > 0) {
-      for (String arg : args) {
-        if (arg.startsWith("--")) {
-          if (arg.startsWith("--special=")) {
-            pg.setSpecialCharNeeded(true);
-            int start = "--special=".length();
-            int end = arg.length();
-            if (end > start) {
-              pg.setSpecialCharList(arg.substring(start, end));
-            } else {
-              pg.setSpecialCharList(DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST);
+      PasswordGenerator pg = null;
+
+      if (args.length == 0) {
+        pg = new PasswordGenerator();
+      } else {
+        pg = new PasswordGenerator(args[0]);
+      }
+
+      if (args.length > 0) {
+        for (String arg : args) {
+          if (arg.startsWith("--")) {
+            if (arg.startsWith("--special=")) {
+              pg.setSpecialCharNeeded(true);
+              int start = "--special=".length();
+              int end = arg.length();
+              if (end > start) {
+                pg.setSpecialCharList(arg.substring(start, end));
+              } else {
+                pg.setSpecialCharList(DEFAULT_GEN_PASSWORD_SPECIAL_CHAR_LIST);
+              }
             }
           }
         }
       }
+
+      pg.init();
+      pg.printGeneratedPasswords();
     }
-    pg.init();
-    pg.printGeneratedPasswords();
+
   }
 
   private void preInit() {
@@ -429,7 +436,7 @@ public class PasswordGenerator implements CommandLineRunner {
     if (ret == null) {
       ret = prop.getProperty(key);
     }
-    LOG.info("getConfig [" + key + "] => [" + ret + "]");
+    LOG.debug("getConfig [" + key + "] => [" + ret + "]");
     return ret;
   }
 
