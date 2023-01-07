@@ -19,15 +19,20 @@ mvn package
 java -cp "./src/main/resources:./target/*"  com.infotekies.passwdgen.PasswordGenerator
 
 #
+# Run as Docker Service
+#
+
+./runDockerService
+
+#
+# To stop the docker service for PasswordGenerator,
+#
+
+./stopDockerService
+
+#
 # Services Exposed
 #
-List Profiles:		/profiles/list			  - GET
-Get Profile:			/profiles/${profileName}	  - GET
-Set Profile:			/profiles/${profileName}	  - POST
-Delete Profile:		/profiles/${profileName}	  - DELETE
-
-Generate Password:	/passwords/list?count=${count}&profile=${profileName}
-
-
-
+Generate Password:	/v1/{profileName}/passwords
+# => profileName could be any string that has been defined in the src/main/resources/passwordgen.properties 
 
