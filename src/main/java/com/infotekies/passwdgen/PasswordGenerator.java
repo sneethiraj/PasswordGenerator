@@ -156,8 +156,8 @@ public class PasswordGenerator implements CommandLineRunner {
         getConfigValue(SHOW_LINE_NUMBER_CONFIG_NAME, Boolean.toString(DEFAULT_SHOW_LINE_NUMBER_CONFIG_NAME)));
 
     if (minimumPasswordLength > maximumPasswordLength) {
-		maximumPasswordLength = minimumPasswordLength ;
-	}
+      maximumPasswordLength = minimumPasswordLength;
+    }
 
   }
 
