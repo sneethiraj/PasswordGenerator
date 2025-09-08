@@ -1,5 +1,15 @@
 #!/bin/bash
-mvn clean spotless:apply package && \
-docker build -t infotekies/password-generator-service . && \
-docker-compose -f docker-compose.passwordgen.yaml  down && \
-docker-compose -f docker-compose.passwordgen.yaml  up -d
+#docker images infotekies/base-passwordgen | grep latest > /dev/null 2>&1
+#if [ $? -ne 0 ]
+#then
+#	cd docker/base-image ; ./buildbase.sh ; cd ../../
+#fi
+##
+#docker images infotekies/base-passwordgen | grep latest 
+#if [ $? -eq 0 ]
+#then
+	mvn clean spotless:apply package && \
+	docker build -t infotekies/password-generator-service . && \
+	docker-compose -f docker-compose.passwordgen.yaml  down && \
+	docker-compose -f docker-compose.passwordgen.yaml  up -d
+#fi

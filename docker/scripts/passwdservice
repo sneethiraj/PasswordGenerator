@@ -20,7 +20,7 @@ LOG_FILE=passwdgen-nohup-out.log
 
 nohup java -cp "./config:./lib/*:./src/main/resources:./target/*" \
 		-Dloader.main=com.infotekies.passwdgen.SpringBootMainApp \
-		org.springframework.boot.loader.PropertiesLauncher $* > ${LOG_FILE} 2>&1
+		org.springframework.boot.loader.PropertiesLauncher  $* > ${LOG_FILE} 2>&1
 
 PID=$!
 
